@@ -11,7 +11,7 @@ public enum Urgency
         return null;
     }
 
-    public void setThresholdOfImmience(LocalDateTime time)
+    public void setThresholdOfImminence(LocalDateTime time)
     {
 
     }
