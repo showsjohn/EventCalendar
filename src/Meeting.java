@@ -1,74 +1,54 @@
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Meeting extends Event implements Completable{
    LocalDateTime endDateTime;
    String location;
-   ArrayList<Reminder> reminders;
+   boolean complete;
 
-    public void addReminder(int daysBefore, int hoursBefore, int minutesBefore)
-    {
+   public Meeting(String name, LocalDateTime dateTime, LocalDateTime endDateTime, String location )
+   {
+        this.name = name;
+        this.dateTime = dateTime;
+        this.endDateTime = endDateTime;
+        this.location = location;
+   }
 
-    }
 
     @Override
     public void complete() {
-
+        this.complete = true;
     }
 
     @Override
     public boolean isComplete() {
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return "";
-    }
-
-    @Override
-    public LocalDateTime getDateTime() {
-        return null;
-    }
-
-    @Override
-    public void setDateTime(LocalDateTime dateTime) {
-
-    }
-
-    @Override
-    public void setName(String name) {
-
-    }
-
-    @Override
-    public int compareTo(Event e) {
-        return 0;
+        return complete;
     }
 
     // specific methods to Meeting class
     public LocalDateTime getEndTime()
     {
-        return null;
+        return endDateTime;
     }
 
-    public int getDuration()
+    public Duration getDuration()
     {
-        return 0;
+        return Duration.between(this.dateTime, endDateTime);
     }
 
     public String getLocation()
     {
-        return "";
+        return location;
     }
 
     public void setLocation(String location)
     {
-
+        this.location = location;
     }
-    public void setEndTime()
+    public void setEndTime(LocalDateTime end)
     {
-
+        this.endDateTime = end;
     }
 
 

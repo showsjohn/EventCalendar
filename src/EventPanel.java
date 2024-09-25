@@ -4,9 +4,91 @@ import java.awt.*;
 public class EventPanel extends JPanel {
     Event event;
     JButton completeButton;
+    JLabel name, time, duration, location, completion;
 
-    @Override
-    public void paintComponents(Graphics g) {
-        super.paintComponents(g);
+
+
+    public EventPanel()
+    {
+
+        this.setLayout(new GridLayout(1, 6));
+        this.setOpaque(true);
+        this.setBackground(Color.WHITE);
+        this.setSize(1200, 500);
+        completeButton = new JButton("Complete");
+        completeButton.addActionListener(al ->
+        {
+            completion.setText("Completed");
+            setBackground(Color.lightGray);
+            revalidate();
+            repaint();
+            //TODO, add action listener
+        });
+        name = new JLabel();
+        time = new JLabel();
+        duration = new JLabel();
+        location = new JLabel();
+        completion = new JLabel();
+        setLabelsFont(name, time, duration, location, completion);
+        addComponents(name, time, duration, location, completion, completeButton);
+       revalidate();
+       repaint();
+    }
+
+    public void draw()
+    {
+        if (event instanceof Meeting meetingEvent)
+        {
+            System.out.println("meeting event");
+
+            name.setText(meetingEvent.getName());
+            time.setText(meetingEvent.getDateTime().toString());
+            duration.setText("duration");
+            location.setText(meetingEvent.getLocation());
+
+            String complete;
+            if (meetingEvent.isComplete())
+            {
+                complete = "Completed";
+            }
+            else
+            {
+                complete = "Incomplete";
+            }
+
+            completion.setText(complete);
+
+        }
+        else {
+            System.out.println("not a meeting");
+
+        }
+    }
+
+
+    public void setEvent(Event e)
+    {
+        event = e;
+    }
+
+    public void setLabelsFont(JLabel...labels)
+    {
+        for(JLabel label: labels)
+        {
+            label.setFont(new Font("Serif", Font.PLAIN, 20));
+        }
+    }
+
+    public void updateUrgency()
+    {
+
+    }
+
+    private void addComponents(Component... comp)
+    {
+        for (Component c: comp)
+        {
+            add(c);
+        }
     }
 }
