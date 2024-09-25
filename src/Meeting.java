@@ -18,7 +18,7 @@ public class Meeting extends Event implements Completable{
 
     @Override
     public void complete() {
-        this.complete = true;
+        this.complete = !complete;
     }
 
     @Override

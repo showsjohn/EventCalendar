@@ -8,27 +8,28 @@ import static java.util.Comparator.comparing;
 
 public class EventListPanel extends JPanel {
     ArrayList<Event> events;
+    ArrayList<EventPanel> eventPanels;
     JPanel controlPanel;
     JPanel displayPanel;
+    JPanel titlePanel;
     JComboBox sortDropDown;
     JCheckBox filterDisplay;
     JButton addEventButton;
 
     JLabel name, time, duration, location,  completionStatus;
 
-    final int LABEL_WIDTH = 150;
-    final int LABEL_HEIGHT = 50;
+    final int LABEL_WIDTH = 180;
+    final int LABEL_HEIGHT = 30;
 
     public EventListPanel()
     {
         this.events = new ArrayList<>();
-
-        this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(1200, 800));
-        this.setBackground(Color.black);
+        eventPanels = new ArrayList<>();
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setSize(new Dimension(1200, 1000));
 
         controlPanel = new JPanel();
-        controlPanel.setSize(new Dimension(1200,100));
+        controlPanel.setMaximumSize(new Dimension(1200, 100));
         filterDisplay = new JCheckBox();
         addEventButton = new JButton("Add Event");
         sortDropDown = new JComboBox();
@@ -44,7 +45,7 @@ public class EventListPanel extends JPanel {
             {
                 case "Name":
                 {
-                    events.sort(comparing(Event::getName));
+                    events.sort(comparing(event-> event.getName().toUpperCase()));
                     break;
                 }
                 case "Date":
@@ -54,7 +55,7 @@ public class EventListPanel extends JPanel {
                 }
                 case "Name-Reversed":
                 {
-                    events.sort(comparing(Event::getName).reversed());
+                    events.sort(comparing((Event event) -> event.getName().toUpperCase()).reversed());
                     break;
                 }
                 case "Date-Reversed":
@@ -66,12 +67,11 @@ public class EventListPanel extends JPanel {
                     throw new RuntimeException("Invalid menu item");
             }
             displayEvents();
-            System.out.println(events.getFirst().getName());
         });
 
-
-
-
+        titlePanel = new JPanel();
+        titlePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        titlePanel.setMaximumSize(new Dimension(1000, 70));
 
         displayPanel = new JPanel();
         displayPanel.setLayout(new GridLayout(10, 1));
@@ -95,7 +95,7 @@ public class EventListPanel extends JPanel {
         location = new JLabel("Location");
         location.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
         location.setFont( new Font("Serif",Font.PLAIN, 20));
-        completionStatus= new JLabel("Completed");
+        completionStatus= new JLabel("Status");
         completionStatus.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
         completionStatus.setFont( new Font("Serif",Font.PLAIN, 20));
 
@@ -120,20 +120,24 @@ public class EventListPanel extends JPanel {
         });
 
 
-       // displayPanel.add(name);
-        //displayPanel.add(time);
-       // displayPanel.add(duration);
-       // displayPanel.add(location);
-        //displayPanel.add(completionStatus);
+        titlePanel.add(name);
+        titlePanel.add(time);
+        titlePanel.add(duration);
+        titlePanel.add(location);
+        titlePanel.add(completionStatus);
+        titlePanel.setMaximumSize(new Dimension(1000, 50));
 
-
-        this.add(controlPanel, BorderLayout.NORTH);
-        this.add(displayPanel, BorderLayout.CENTER);
+        this.add(controlPanel);
+        this.add(titlePanel);
+        this.add(displayPanel);
 
         events.add(new Meeting("cik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
         events.add(new Meeting("tik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
         events.add(new Meeting("aik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
         events.add(new Meeting("zik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
+        events.add(new Meeting("cik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
+        events.add(new Meeting("tik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
+        events.add(new Meeting("aik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
 
         displayEvents();
         this.revalidate();
@@ -144,20 +148,39 @@ public class EventListPanel extends JPanel {
     private void displayEvents()
     {
         displayPanel.removeAll();
-        int offSet = 20;
+
         for (Event e : events)
         {
-            System.out.println("displaying");
             EventPanel ePanel = new EventPanel();
             ePanel.setEvent(e);
-            offSet+=70;
             ePanel.draw();
             displayPanel.add(ePanel);
         }
         revalidate();
         repaint();
-
     }
 
 
+
+/*  private void addEventPanels()
+    {
+        for (Event e : events)
+        {
+            EventPanel ePanel = new EventPanel();
+            ePanel.setEvent(e);
+            eventPanels.add(ePanel);
+        }
+    }
+
+    private void displayEvents()
+    {
+        displayPanel.removeAll();
+        for (EventPanel ePanel : eventPanels)
+        {
+            ePanel.draw();
+            displayPanel.add(ePanel);
+        }
+        revalidate();
+        repaint();
+    }*/
 }

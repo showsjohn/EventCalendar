@@ -10,7 +10,6 @@ public class EventPlanner {
         EventListPanel eventList = new EventListPanel();
         jframe.add(eventList);
         jframe.setVisible(true);
-        jframe.getContentPane().setBackground(Color.green);
     }
 
     public static void addDefaultEvents(EventPanel events)
