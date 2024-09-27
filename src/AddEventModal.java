@@ -3,16 +3,18 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class AddEventModel extends JDialog
+public class AddEventModal extends JDialog
 {
     private enum Type {MEETING, DEADLINE}
-    public Boolean isSubmitted;
+    public Boolean isSubmitted = false;
 
     Type type;
     JLabel labelName, labelStartTime, labelEndTime, labelLocation, title;
     JTextField name, startTime, endTime, location;
     JButton submit;
     JCheckBox meetingType, deadlineType;
+    JPanel datePicker;
+    JComboBox month, day, year;
 
     final int WINDOW_WIDTH = 500;
     final int WINDOW_HEIGHT = 600;
@@ -20,28 +22,29 @@ public class AddEventModel extends JDialog
     final int TEXTFIELD_WIDTH = WINDOW_WIDTH - (int)(WINDOW_WIDTH * 0.1);
     final int TEXTFIELD_HEIGHT = 50;
 
-    final int LABEL_WIDTH = 200;
+    final int LABEL_WIDTH = 220;
     final int LABEL_HEIGHT = 25;
 
-    public AddEventModel()
+    public AddEventModal()
     {
+        this.setTitle("Add Event");
         this.setModal(true);
         this.setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
         this.setLayout(null);
         title = new JLabel("Add Event");
         title.setBounds((WINDOW_WIDTH / 2) - (LABEL_WIDTH / 4), LABEL_HEIGHT , LABEL_WIDTH, LABEL_HEIGHT);
 
+        datePicker = new JPanel();
         labelName = new JLabel("Name");
-        labelStartTime = new JLabel("Start Time");
+        labelStartTime = new JLabel("Start Time (Meeting only)");
         labelEndTime = new JLabel("End Time");
-
-        labelLocation = new JLabel("Location");
+        labelLocation = new JLabel("Location (Meeting only");
 
         name = new JTextField();
         name.setFont(new Font("Serif", Font.PLAIN, 20));
-        startTime = new JTextField();
+        startTime = new JTextField("yyyy-MM-dd HH:mm");
         startTime.setFont(new Font("Serif", Font.PLAIN, 20));
-        endTime = new JTextField();
+        endTime = new JTextField("yyyy-MM-dd HH:mm");
         endTime.setFont(new Font("Serif", Font.PLAIN, 20));
         location = new JTextField();
         location.setFont(new Font("Serif", Font.PLAIN, 20));
@@ -72,8 +75,6 @@ public class AddEventModel extends JDialog
         this.add(submit);
         this.add(title);
 
-
-
         submit.addActionListener(al ->
         {
             isSubmitted = true;
@@ -85,25 +86,25 @@ public class AddEventModel extends JDialog
 
     public Event inputFromUser()
     {
+        // get input from form fields
         String Name = name.getText();
-        String Location = location.getText();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime StartTime = LocalDateTime.parse(startTime.getText(), formatter);
         LocalDateTime EndTime = LocalDateTime.parse(endTime.getText(), formatter);
 
+        // if type is of Meeting, get the location and startTime
         if(type == Type.MEETING)
         {
+            String Location = location.getText();
+            LocalDateTime StartTime = LocalDateTime.parse(startTime.getText(), formatter);
             return new Meeting(Name, StartTime, EndTime, Location);
         }
-        return null;
-
-        /* if(type == Type.DEADLINE)
+         else
         {
-            return new Deadline(Name, StartTime, EndTime, Location);
-
-        } */
+            return new Deadline(Name, EndTime);
+        }
     }
 
+    // helper methods for setting up components
     public void addFieldComponents(Component... comp)
     {
         int offSet = 1;

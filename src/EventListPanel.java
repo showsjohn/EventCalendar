@@ -8,7 +8,6 @@ import static java.util.Comparator.comparing;
 
 public class EventListPanel extends JPanel {
     ArrayList<Event> events;
-    ArrayList<EventPanel> eventPanels;
     JPanel controlPanel;
     JPanel displayPanel;
     JPanel titlePanel;
@@ -16,24 +15,24 @@ public class EventListPanel extends JPanel {
     JCheckBox filterDisplay;
     JButton addEventButton;
 
-    JLabel name, time, duration, location,  completionStatus;
+    JLabel name, startTime, endTime, duration, location,  completionStatus;
 
-    final int LABEL_WIDTH = 180;
+    final int LABEL_WIDTH = 210;
     final int LABEL_HEIGHT = 30;
 
     public EventListPanel()
     {
         this.events = new ArrayList<>();
-        eventPanels = new ArrayList<>();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setSize(new Dimension(1200, 1000));
+        this.setSize(new Dimension(EventPlanner.WINDOW_WIDTH, EventPlanner.WINDOW_HEIGHT));
 
         controlPanel = new JPanel();
-        controlPanel.setMaximumSize(new Dimension(1200, 100));
+        controlPanel.setMaximumSize(new Dimension(EventPlanner.WINDOW_WIDTH, 100));
         filterDisplay = new JCheckBox();
         addEventButton = new JButton("Add Event");
         sortDropDown = new JComboBox();
 
+        // options for Jcombobox
         sortDropDown.addItem("Name");
         sortDropDown.addItem("Date");
         sortDropDown.addItem("Name-Reversed");
@@ -41,6 +40,7 @@ public class EventListPanel extends JPanel {
         sortDropDown.addActionListener(al -> {
             String selection = (String) sortDropDown.getSelectedItem();
 
+            // based on selection, use appropriate sorting algorithm
             switch (selection)
             {
                 case "Name":
@@ -69,77 +69,80 @@ public class EventListPanel extends JPanel {
             displayEvents();
         });
 
+        // panel to hold the title jlabels
         titlePanel = new JPanel();
         titlePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        titlePanel.setMaximumSize(new Dimension(1000, 70));
+        titlePanel.setMaximumSize(new Dimension(EventPlanner.WINDOW_WIDTH, 70));
 
+        // display panel to hold the EventPanels
         displayPanel = new JPanel();
-        displayPanel.setLayout(new GridLayout(10, 1));
+        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
         displayPanel.setOpaque(false);
         displayPanel.setBackground(Color.yellow);
 
-
-        controlPanel.add(filterDisplay);
+        // Control panel to hold the controls
         controlPanel.add(addEventButton);
         controlPanel.add(sortDropDown);
 
+        // create title jlabels, set sizes, and set fonts
         name = new JLabel("Name");
         name.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
         name.setFont( new Font("Serif",Font.PLAIN, 20));
-        time = new JLabel("Time");
-        time.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
-        time.setFont( new Font("Serif",Font.PLAIN, 20));
+
+        startTime = new JLabel("Start Time");
+        startTime.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
+        startTime.setFont( new Font("Serif",Font.PLAIN, 20));
+
+        endTime = new JLabel("End Time");
+        endTime.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
+        endTime.setFont( new Font("Serif",Font.PLAIN, 20));
+
         duration = new JLabel("Duration");
         duration.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
         duration.setFont( new Font("Serif",Font.PLAIN, 20));
+
         location = new JLabel("Location");
         location.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
         location.setFont( new Font("Serif",Font.PLAIN, 20));
+
         completionStatus= new JLabel("Status");
         completionStatus.setPreferredSize( new Dimension (LABEL_WIDTH , LABEL_HEIGHT));
         completionStatus.setFont( new Font("Serif",Font.PLAIN, 20));
 
+        // action lister for button
         addEventButton.addActionListener(al ->
         {
-            AddEventModel model = new AddEventModel();
+            // on click, create new AddEventModal dialog box
+            AddEventModal model = new AddEventModal();
             model.setVisible(true);
-            Event e = null;
+            Event e;
 
-            System.out.println("going");
+            // if the AddEventModal window is closed, check if form is submitted
             if (model.isSubmitted())
             {
-                e = model.inputFromUser();
-                events.add(e);
+                e = model.inputFromUser(); // get the form input
+                events.add(e); // add new event
                 displayPanel.removeAll();
                 displayEvents();
                 revalidate();
                 repaint();
             }
-
-
         });
 
 
-        titlePanel.add(name);
-        titlePanel.add(time);
-        titlePanel.add(duration);
-        titlePanel.add(location);
-        titlePanel.add(completionStatus);
-        titlePanel.setMaximumSize(new Dimension(1000, 50));
+        // add components to titlePanel
+        addComponents(titlePanel, name, startTime, endTime, duration, location, completionStatus);
+        // add components to this EventListPanel
+        addComponents(this, controlPanel,titlePanel,displayPanel);
 
-        this.add(controlPanel);
-        this.add(titlePanel);
-        this.add(displayPanel);
+        // sample events
+        events.add(new Meeting("Project #2", LocalDateTime.now(), LocalDateTime.now(), "Library Room 215"));
+        events.add(new Meeting("Safety Meeting", LocalDateTime.now(), LocalDateTime.now(), "Training Room"));
+        events.add(new Meeting("Study Group", LocalDateTime.now(), LocalDateTime.now(), "Library Room 117"));
+        events.add(new Deadline("Project #2", LocalDateTime.now()));
 
-        events.add(new Meeting("cik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
-        events.add(new Meeting("tik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
-        events.add(new Meeting("aik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
-        events.add(new Meeting("zik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
-        events.add(new Meeting("cik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
-        events.add(new Meeting("tik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
-        events.add(new Meeting("aik tok", LocalDateTime.now(), LocalDateTime.now(), "room"));
 
-        displayEvents();
+        displayEvents();  // create the EventPanels
         this.revalidate();
         this.repaint();
 
@@ -155,32 +158,18 @@ public class EventListPanel extends JPanel {
             ePanel.setEvent(e);
             ePanel.draw();
             displayPanel.add(ePanel);
+            displayPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         }
         revalidate();
         repaint();
     }
 
-
-
-/*  private void addEventPanels()
+    private void addComponents(JPanel panel, Component... comp)
     {
-        for (Event e : events)
+        for (Component c: comp)
         {
-            EventPanel ePanel = new EventPanel();
-            ePanel.setEvent(e);
-            eventPanels.add(ePanel);
+            panel.add(c);
         }
     }
 
-    private void displayEvents()
-    {
-        displayPanel.removeAll();
-        for (EventPanel ePanel : eventPanels)
-        {
-            ePanel.draw();
-            displayPanel.add(ePanel);
-        }
-        revalidate();
-        repaint();
-    }*/
 }
